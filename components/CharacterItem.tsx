@@ -7,8 +7,10 @@ import { Image } from 'expo-image';
 export function CharacterItem({ name, image}: CharacterItemProps) {
   return (
     <View style={styles.container}>
-        <Image source={image} style={{width: 20, height: 20}} />
-      <ThemedText>{name}</ThemedText>
+        <View style={styles.ifixContainer}>
+            <Image source={image} style={{width: 20, height: 20}} />
+            <ThemedText>{name}</ThemedText>
+        </View>
     </View>
   );
 }
@@ -18,6 +20,11 @@ const styles = StyleSheet.create({
     flex: 1,
     marginTop: 20,
     padding: 10,
-    backgroundColor: "#42ddf5",
+    borderRadius: 10,
   },
+  ifixContainer: {
+    flexDirection: "row",
+    alignItems: "center",
+    gap: 8,
+  }
 });
