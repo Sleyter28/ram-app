@@ -1,63 +1,99 @@
-import { Image, StyleSheet, Platform } from 'react-native';
+import { Image, StyleSheet, Platform, FlatList, StatusBar } from "react-native";
 
-import { HelloWave } from '@/components/HelloWave';
-import ParallaxScrollView from '@/components/ParallaxScrollView';
-import { ThemedText } from '@/components/ThemedText';
-import { ThemedView } from '@/components/ThemedView';
+import { HelloWave } from "@/components/HelloWave";
+import { ThemedText } from "@/components/ThemedText";
+import { ThemedView } from "@/components/ThemedView";
+import { SafeAreaProvider, SafeAreaView } from "react-native-safe-area-context";
+import { CharacterItem } from "@/components/CharacterItem";
+import { useEffect, useState } from "react";
+import { CharacterItemProps } from "@/types";
+import { getCharacters } from "@/utils/character";
+
+const DATA = [
+  {
+    id: 1,
+    name: "Rick Sanchez",
+    status: "Alive",
+    species: "Human",
+    type: "",
+    gender: "Male",
+    image: "https://rickandmortyapi.com/api/character/avatar/1.jpeg",
+    created: "2017-11-04T18:48:46.250Z"
+},
+{
+    id: 2,
+    name: "Morty Smith",
+    status: "Alive",
+    species: "Human",
+    type:"",
+    gender: "Male",
+    image: "https://rickandmortyapi.com/api/character/avatar/2.jpeg",
+    created: "2017-11-04T18:50:21.651Z"
+},
+{
+    id: 3,
+    name: "Summer Smith",
+    status: "Alive",
+    species: "Human",
+    type: "",
+    gender: "Female",
+    image: "https://rickandmortyapi.com/api/character/avatar/3.jpeg",
+    created: "2017-11-04T19:09:56.428Z"
+},
+{
+    id: 4,
+    name: "Beth Smith",
+    status: "Alive",
+    species: "Human",
+    type: "",
+    gender: "Female",
+    image: "https://rickandmortyapi.com/api/character/avatar/4.jpeg",
+    created: "2017-11-04T19:22:43.665Z"
+},
+];
 
 export default function HomeScreen() {
+  const [characters, setCharacters] = useState<CharacterItemProps[]>([]);
+
+  useEffect(() => {
+    const getCharactersData = async() => {
+      try {
+        const resp = await getCharacters();
+        if (resp) {
+          setCharacters(resp.results);
+          console.log("Characters: ", characters);
+        }
+      } catch (error) {
+        console.error("Error fetching characters: ", error);
+      }
+    }
+    getCharactersData();
+  }, []);
   return (
-    <ParallaxScrollView
-      headerBackgroundColor={{ light: '#A1CEDC', dark: '#1D3D47' }}
-      headerImage={
-        <Image
-          source={require('@/assets/images/partial-react-logo.png')}
-          style={styles.reactLogo}
+    <SafeAreaProvider>
+      <SafeAreaView style={{ flex: 1 }}>
+        <ThemedView style={styles.titleContainer}>
+          <ThemedText type="title">Characters</ThemedText>
+          <HelloWave isCharacter={true} />
+        </ThemedView>
+        <FlatList
+          data={characters}
+          renderItem={({ item }) => <CharacterItem {...item}  />}
+          keyExtractor={(item) => `${item.id}`}
         />
-      }>
-      <ThemedView style={styles.titleContainer}>
-        <ThemedText type="title">Welcome!</ThemedText>
-        <HelloWave />
-      </ThemedView>
-      <ThemedView style={styles.stepContainer}>
-        <ThemedText type="subtitle">Step 1: Try it</ThemedText>
-        <ThemedText>
-          Edit <ThemedText type="defaultSemiBold">app/(tabs)/index.tsx</ThemedText> to see changes.
-          Press{' '}
-          <ThemedText type="defaultSemiBold">
-            {Platform.select({
-              ios: 'cmd + d',
-              android: 'cmd + m',
-              web: 'F12'
-            })}
-          </ThemedText>{' '}
-          to open developer tools.
-        </ThemedText>
-      </ThemedView>
-      <ThemedView style={styles.stepContainer}>
-        <ThemedText type="subtitle">Step 2: Explore</ThemedText>
-        <ThemedText>
-          Tap the Explore tab to learn more about what's included in this starter app.
-        </ThemedText>
-      </ThemedView>
-      <ThemedView style={styles.stepContainer}>
-        <ThemedText type="subtitle">Step 3: Get a fresh start</ThemedText>
-        <ThemedText>
-          When you're ready, run{' '}
-          <ThemedText type="defaultSemiBold">npm run reset-project</ThemedText> to get a fresh{' '}
-          <ThemedText type="defaultSemiBold">app</ThemedText> directory. This will move the current{' '}
-          <ThemedText type="defaultSemiBold">app</ThemedText> to{' '}
-          <ThemedText type="defaultSemiBold">app-example</ThemedText>.
-        </ThemedText>
-      </ThemedView>
-    </ParallaxScrollView>
+      </SafeAreaView>
+    </SafeAreaProvider>
   );
 }
 
 const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+    marginTop: StatusBar.currentHeight || 0,
+  },
   titleContainer: {
-    flexDirection: 'row',
-    alignItems: 'center',
+    flexDirection: "row",
+    alignItems: "center",
     gap: 8,
   },
   stepContainer: {
@@ -66,9 +102,9 @@ const styles = StyleSheet.create({
   },
   reactLogo: {
     height: 178,
-    width: 290,
+    width: 400,
     bottom: 0,
-    left: 0,
-    position: 'absolute',
+    left: 10,
+    position: "absolute",
   },
 });
